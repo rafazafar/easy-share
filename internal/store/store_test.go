@@ -92,6 +92,29 @@ func TestDelete(t *testing.T) {
 	}
 }
 
+func TestCleanup(t *testing.T) {
+	s, _ := New(t.TempDir())
+	meta, _ := s.Save("old.txt", "text/plain", strings.NewReader("old"), -1)
+	writeBackdatedMeta(t, s, meta.ID, 48*time.Hour)
+
+	// fresh file should survive
+	fresh, _ := s.Save("new.txt", "text/plain", strings.NewReader("new"), -1)
+
+	deleted := s.Cleanup(24 * time.Hour)
+	if deleted != 1 {
+		t.Fatalf("deleted = %d, want 1", deleted)
+	}
+	if _, err := s.Meta(meta.ID); err == nil {
+		t.Fatal("expected old meta deleted")
+	}
+	if _, err := s.Open(meta.ID); err == nil {
+		t.Fatal("expected old file deleted")
+	}
+	if _, err := s.Meta(fresh.ID); err != nil {
+		t.Fatal("expected fresh meta to remain")
+	}
+}
+
 // writeBackdatedMeta overwrites a sidecar with an old CreatedAt for cleanup tests.
 func writeBackdatedMeta(t *testing.T, s *Store, id string, age time.Duration) {
 	t.Helper()

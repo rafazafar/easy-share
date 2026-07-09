@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -122,3 +123,33 @@ func (s *Store) writeMeta(m *Meta) error {
 
 func (s *Store) filePath(id string) string { return filepath.Join(s.root, "files", id) }
 func (s *Store) metaPath(id string) string { return filepath.Join(s.root, "meta", id+".json") }
+
+// Cleanup deletes files older than maxAge. Returns the count removed.
+func (s *Store) Cleanup(maxAge time.Duration) int {
+	entries, err := os.ReadDir(filepath.Join(s.root, "meta"))
+	if err != nil {
+		return 0
+	}
+	now := time.Now()
+	deleted := 0
+	for _, e := range entries {
+		if e.IsDir() {
+			continue
+		}
+		name := e.Name()
+		if !strings.HasSuffix(name, ".json") {
+			continue
+		}
+		id := strings.TrimSuffix(name, ".json")
+		m, err := s.Meta(id)
+		if err != nil {
+			continue
+		}
+		if now.Sub(m.CreatedAt) > maxAge {
+			if err := s.Delete(id); err == nil {
+				deleted++
+			}
+		}
+	}
+	return deleted
+}
