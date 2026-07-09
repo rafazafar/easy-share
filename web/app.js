@@ -1,0 +1,83 @@
+(function () {
+  "use strict";
+
+  var $ = function (id) { return document.getElementById(id); };
+  var STATES = ["idle", "uploading", "done", "error"];
+  var MAX = 100 * 1024 * 1024;
+
+  function show(name) {
+    STATES.forEach(function (s) { $(s).classList.toggle("hidden", s !== name); });
+  }
+  function fail(msg) { $("err-text").textContent = msg; show("error"); }
+  function reset() { $("fileinput").value = ""; show("idle"); }
+
+  function upload(file) {
+    if (file.size > MAX) { fail("ファイルサイズが大きすぎます（最大100MB）"); return; }
+    show("uploading");
+    $("up-filename").textContent = file.name;
+    $("bar").style.width = "0%";
+    $("pct").textContent = "0%";
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/api/upload");
+    xhr.setRequestHeader("X-Filename", encodeURIComponent(file.name));
+    xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
+
+    xhr.upload.onprogress = function (e) {
+      if (e.lengthComputable) {
+        var p = Math.round((e.loaded / e.total) * 100);
+        $("bar").style.width = p + "%";
+        $("pct").textContent = p + "%";
+      }
+    };
+    xhr.onload = function () {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        var res = JSON.parse(xhr.responseText);
+        var url = res.url || (location.origin + "/d/" + res.id);
+        $("shareurl").value = url;
+        show("done");
+      } else {
+        fail(xhr.status === 413
+          ? "ファイルサイズが大きすぎます（最大100MB）"
+          : "アップロードに失敗しました");
+      }
+    };
+    xhr.onerror = function () { fail("通信エラーが発生しました"); };
+    xhr.send(file);
+  }
+
+  $("fileinput").addEventListener("change", function (e) {
+    if (e.target.files[0]) upload(e.target.files[0]);
+  });
+
+  var dz = $("dropzone");
+  ["dragenter", "dragover"].forEach(function (ev) {
+    dz.addEventListener(ev, function (e) { e.preventDefault(); dz.classList.add("drag"); });
+  });
+  ["dragleave", "drop"].forEach(function (ev) {
+    dz.addEventListener(ev, function (e) { e.preventDefault(); dz.classList.remove("drag"); });
+  });
+  dz.addEventListener("drop", function (e) {
+    var f = e.dataTransfer.files[0];
+    if (f) upload(f);
+  });
+
+  $("retry").addEventListener("click", reset);
+  $("again").addEventListener("click", reset);
+
+  $("copybtn").addEventListener("click", function () {
+    var input = $("shareurl");
+    var btn = $("copybtn");
+    var done = function () {
+      btn.textContent = "コピーしました！";
+      setTimeout(function () { btn.textContent = "コピー"; }, 2000);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(input.value).then(done, function () {
+        input.select(); document.execCommand("copy"); done();
+      });
+    } else {
+      input.select(); document.execCommand("copy"); done();
+    }
+  });
+})();

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>easy-share</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main class="card">
+    <header class="brand">
+      <h1><span class="logo">📎</span> easy-share</h1>
+      <p class="subtitle">かんたんファイル共有</p>
+    </header>
+
+    <section id="idle" class="state">
+      <label id="dropzone" class="dropzone" for="fileinput">
+        <div class="dz-icon">📤</div>
+        <div class="dz-text">ここにファイルをドロップ</div>
+        <div class="dz-sub">または クリックして選択</div>
+        <input id="fileinput" type="file" hidden>
+      </label>
+      <div class="hint">最大 100MB</div>
+    </section>
+
+    <section id="uploading" class="state hidden">
+      <div class="filename" id="up-filename"></div>
+      <div class="progress"><div id="bar" class="bar"></div></div>
+      <div class="pct" id="pct">0%</div>
+    </section>
+
+    <section id="done" class="state hidden">
+      <div class="check">✅</div>
+      <div class="done-text">アップロード完了！</div>
+      <div class="url-box">
+        <input id="shareurl" readonly>
+        <button id="copybtn" type="button">コピー</button>
+      </div>
+      <button id="again" class="link-btn" type="button">別のファイルをアップロード</button>
+    </section>
+
+    <section id="error" class="state hidden">
+      <div class="err-icon">⚠️</div>
+      <div id="err-text" class="err-text"></div>
+      <button id="retry" class="link-btn" type="button">もう一度</button>
+    </section>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>
