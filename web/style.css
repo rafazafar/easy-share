@@ -60,6 +60,7 @@ body {
 .dz-text { font-weight: 600; margin-top: .5rem; }
 .dz-sub { color: var(--muted); font-size: .9rem; margin-top: .25rem; }
 .hint { text-align: center; color: var(--muted); font-size: .82rem; margin-top: .9rem; }
+.note { text-align: center; color: var(--muted); font-size: .8rem; margin: .25rem 0 1rem; }
 
 .filename { text-align: center; font-weight: 600; margin-bottom: 1rem; word-break: break-all; }
 .progress {

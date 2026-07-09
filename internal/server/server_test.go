@@ -95,6 +95,34 @@ func TestUploadTooLarge(t *testing.T) {
 	}
 }
 
+func TestConfigEndpoint(t *testing.T) {
+	srv := newTestServer(t, 2048)
+	ts := httptest.NewServer(srv.Handler())
+	defer ts.Close()
+
+	resp, err := http.Get(ts.URL + "/api/config")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("status = %d, want 200", resp.StatusCode)
+	}
+	var res struct {
+		MaxUploadBytes int64 `json:"maxUploadBytes"`
+		RetentionHours int64 `json:"retentionHours"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&res); err != nil {
+		t.Fatal(err)
+	}
+	if res.MaxUploadBytes != 2048 {
+		t.Fatalf("maxUploadBytes = %d, want 2048", res.MaxUploadBytes)
+	}
+	if res.RetentionHours != 720 { // newTestServer sets 30*24h
+		t.Fatalf("retentionHours = %d, want 720", res.RetentionHours)
+	}
+}
+
 func TestDownloadMissing(t *testing.T) {
 	srv := newTestServer(t, 1024)
 	ts := httptest.NewServer(srv.Handler())

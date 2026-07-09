@@ -41,10 +41,19 @@ func (s *Server) Handler() http.Handler { return s.handler }
 
 func (s *Server) routes() http.Handler {
 	mux := http.NewServeMux()
+	mux.HandleFunc("GET /api/config", s.handleConfig)
 	mux.HandleFunc("POST /api/upload", s.handleUpload)
 	mux.HandleFunc("GET /d/{id}", s.handleDownload)
 	mux.Handle("/", http.FileServer(http.FS(s.static)))
 	return mux
+}
+
+func (s *Server) handleConfig(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(map[string]any{
+		"maxUploadBytes": s.cfg.MaxUploadBytes,
+		"retentionHours": int64(s.cfg.Retention.Hours()),
+	})
 }
 
 // StartCleanup runs an immediate cleanup then sweeps every hour.

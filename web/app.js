@@ -4,6 +4,34 @@
   var $ = function (id) { return document.getElementById(id); };
   var STATES = ["idle", "uploading", "done", "error"];
   var MAX = 100 * 1024 * 1024;
+  var MAX_LABEL = "100MB";
+  var RETENTION_LABEL = "30日";
+
+  function humanSize(b) {
+    if (b >= 1073741824) return (b / 1073741824).toFixed(0) + "GB";
+    if (b >= 1048576) return (b / 1048576).toFixed(0) + "MB";
+    if (b >= 1024) return (b / 1024).toFixed(0) + "KB";
+    return b + "B";
+  }
+  function humanRetention(hours) {
+    if (hours % 24 === 0) return (hours / 24) + "日";
+    return "約" + Math.round(hours / 24) + "日";
+  }
+
+  function loadConfig() {
+    fetch("/api/config").then(function (r) { return r.json(); }).then(function (c) {
+      if (c && typeof c.maxUploadBytes === "number") {
+        MAX = c.maxUploadBytes;
+        MAX_LABEL = humanSize(MAX);
+      }
+      if (c && typeof c.retentionHours === "number") {
+        RETENTION_LABEL = humanRetention(c.retentionHours);
+      }
+      $("hint").textContent = "最大 " + MAX_LABEL + " · " + RETENTION_LABEL + "後に自動削除";
+      $("done-note").textContent = "※このファイルは" + RETENTION_LABEL + "後に自動で削除されます";
+    }).catch(function () { /* keep defaults */ });
+  }
+  loadConfig();
 
   function show(name) {
     STATES.forEach(function (s) { $(s).classList.toggle("hidden", s !== name); });
@@ -12,7 +40,7 @@
   function reset() { $("fileinput").value = ""; show("idle"); }
 
   function upload(file) {
-    if (file.size > MAX) { fail("ファイルサイズが大きすぎます（最大100MB）"); return; }
+    if (file.size > MAX) { fail("ファイルサイズが大きすぎます（最大" + MAX_LABEL + "）"); return; }
     show("uploading");
     $("up-filename").textContent = file.name;
     $("bar").style.width = "0%";
@@ -38,7 +66,7 @@
         show("done");
       } else {
         fail(xhr.status === 413
-          ? "ファイルサイズが大きすぎます（最大100MB）"
+          ? "ファイルサイズが大きすぎます（最大" + MAX_LABEL + "）"
           : "アップロードに失敗しました");
       }
     };

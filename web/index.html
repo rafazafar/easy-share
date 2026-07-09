@@ -20,7 +20,7 @@
         <div class="dz-sub">または クリックして選択</div>
         <input id="fileinput" type="file" hidden>
       </label>
-      <div class="hint">最大 100MB</div>
+      <div class="hint" id="hint">最大 100MB</div>
     </section>
 
     <section id="uploading" class="state hidden">
@@ -32,6 +32,7 @@
     <section id="done" class="state hidden">
       <div class="check">✅</div>
       <div class="done-text">アップロード完了！</div>
+      <div class="note" id="done-note"></div>
       <div class="url-box">
         <input id="shareurl" readonly>
         <button id="copybtn" type="button">コピー</button>
