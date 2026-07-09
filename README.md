@@ -32,7 +32,7 @@ go run .
 docker compose up -d
 ```
 
-Uploads are persisted in `./data`. Set `BASE_URL` in `docker-compose.yml` for production share URLs.
+Uploads are persisted in a named volume. Override any setting via environment variables or a `.env` file (see `.env.example`) — e.g. set `BASE_URL` to your domain for correct share URLs.
 
 ## Deploy with Railpack
 

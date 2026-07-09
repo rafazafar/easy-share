@@ -1,16 +1,18 @@
+# All values can be overridden via environment variables
+# (Dokploy app env settings, or a .env file next to this compose file).
 services:
   app:
     build: .
     expose:
-      - "8080"
+      - "${PORT:-8080}"
     volumes:
       - easy-share-data:/data
     environment:
       DATA_DIR: /data
-      PORT: "8080"
-      BASE_URL: "https://your-domain.com"
-      # MAX_UPLOAD_BYTES: "104857600"
-      # RETENTION: "720h"
+      PORT: "${PORT:-8080}"
+      BASE_URL: "${BASE_URL:-}"
+      MAX_UPLOAD_BYTES: "${MAX_UPLOAD_BYTES:-104857600}"
+      RETENTION: "${RETENTION:-720h}"
     restart: unless-stopped
 
 volumes:
