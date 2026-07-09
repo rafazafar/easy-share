@@ -10,17 +10,17 @@
   <main class="card">
     <header class="brand">
       <h1><span class="logo">📎</span> イージーシェア</h1>
-      <p class="subtitle">かんたんファイル共有</p>
+      <p class="subtitle">ファイルをかんたん共有</p>
     </header>
 
     <section id="idle" class="state">
       <label id="dropzone" class="dropzone" for="fileinput">
         <div class="dz-icon">📤</div>
-        <div class="dz-text">ここにファイルをドロップ</div>
-        <div class="dz-sub">または クリックして選択</div>
+        <div class="dz-text">ここにファイルをドラッグ＆ドロップ</div>
+        <div class="dz-sub">またはクリックして選択</div>
         <input id="fileinput" type="file" hidden>
       </label>
-      <div class="hint" id="hint">最大 100MB</div>
+      <div class="hint" id="hint">最大 100MB ・ 一定期間後に自動削除</div>
     </section>
 
     <section id="uploading" class="state hidden">
@@ -32,7 +32,7 @@
     <section id="done" class="state hidden">
       <div class="check">✅</div>
       <div class="done-text">アップロード完了！</div>
-      <div class="note" id="done-note"></div>
+      <div class="note" id="done-note">※アップロードしたファイルは一定期間後に自動で削除されます</div>
       <div class="url-box">
         <input id="shareurl" readonly>
         <button id="copybtn" type="button">コピー</button>

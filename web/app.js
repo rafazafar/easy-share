@@ -27,8 +27,8 @@
       if (c && typeof c.retentionHours === "number") {
         RETENTION_LABEL = humanRetention(c.retentionHours);
       }
-      $("hint").textContent = "最大 " + MAX_LABEL + " · " + RETENTION_LABEL + "後に自動削除";
-      $("done-note").textContent = "※このファイルは" + RETENTION_LABEL + "後に自動で削除されます";
+      $("hint").textContent = "最大 " + MAX_LABEL + " ・ " + RETENTION_LABEL + "後に自動削除";
+      $("done-note").textContent = "※アップロードしたファイルは" + RETENTION_LABEL + "後に自動で削除されます";
     }).catch(function () { /* keep defaults */ });
   }
   loadConfig();
