@@ -1,0 +1,5 @@
+/data/
+/easy-share
+/out
+*.exe
+.DS_Store
