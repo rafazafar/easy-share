@@ -1,14 +1,17 @@
 services:
   app:
     build: .
-    ports:
-      - "8080:8080"
+    expose:
+      - "8080"
     volumes:
-      - ./data:/data
+      - easy-share-data:/data
     environment:
       DATA_DIR: /data
       PORT: "8080"
-      # BASE_URL: "https://your-domain.com"
+      BASE_URL: "https://your-domain.com"
       # MAX_UPLOAD_BYTES: "104857600"
       # RETENTION: "720h"
     restart: unless-stopped
+
+volumes:
+  easy-share-data:
